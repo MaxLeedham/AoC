@@ -5,8 +5,6 @@
 #define NUM_LINES 1000
 #define MAX_LINE_SIZE 256
 
-int int_compare(const void *a, const void *b);
-
 int main(int argc, char **argv)
 {
     int list1[NUM_LINES];
@@ -41,24 +39,6 @@ int main(int argc, char **argv)
     }
 
     printf("%d\n", similarity_score);
-
-    return 0;
-}
-
-int int_compare(const void *a, const void *b)
-{
-    if (*((int *)a) < *((int *)b))
-    {
-        return -1;
-    }
-    if (*((int *)a) == *((int *)b))
-    {
-        return 0;
-    }
-    if (*((int *)a )> *((int *)b))
-    {
-        return 1;
-    }
 
     return 0;
 }
