@@ -1,6 +1,14 @@
+/*
+This is INCREDIBLY INCREDIBLY slow code
+
+It took 4 and a half hours on my laptop for it to finish on the input file
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#define LOOP_COUNT 100000
 
 #define NUM_LINES 130
 #define LINE_SIZE 150
@@ -14,7 +22,9 @@ typedef struct position {
 void free_map(char **map);
 void read_input(FILE *fp, char **map);
 position find_position(char **map);
-int loop(char **map);
+int loop(char **map, int x, int y);
+int count_loops(char **map);
+char **copy_map(char **map);
 
 int main(int argc, char **argv)
 {
@@ -29,8 +39,8 @@ int main(int argc, char **argv)
 
     read_input(fp, map);
 
-    count = loop(map);
-    printf("Unique locations: %d", count);
+    count = count_loops(map);
+    printf("%d Number of loops\n", count);
 
     free_map(map);
     fclose(fp);
@@ -97,13 +107,19 @@ position find_position(char **map)
     return found;
 }
 
-int loop(char **map)
+int loop(char **map, int x, int y)
 {
     position location = find_position(map);
     int count = 0;
+    int full_count = 0;
 
     while (location.x != -1 || location.y != -1)
     {
+        if (full_count == LOOP_COUNT)
+        {
+            return full_count;
+        }
+
         switch (location.type)
         {
             case '^':
@@ -126,6 +142,7 @@ int loop(char **map)
                         location.y--;
                     }
 
+                    full_count++;
                     continue;
                 }
                 else
@@ -151,6 +168,7 @@ int loop(char **map)
                         location.x++;
                     }
 
+                    full_count++;
                     continue;
                 }
                 else
@@ -176,6 +194,7 @@ int loop(char **map)
                         location.y++;
                     }
 
+                    full_count++;
                     continue;
                 }
                 else
@@ -202,6 +221,7 @@ int loop(char **map)
                         location.x--;
                     }
 
+                    full_count++;
                     continue;
                 }
                 else
@@ -209,9 +229,57 @@ int loop(char **map)
                     return count + 1;
                 }
         }
-
-        location = find_position(map);
     }
 
     return count;
+}
+
+int count_loops(char **map)
+{
+    int loops = 0;
+    int i, j;
+    char **copy = copy_map(map);
+
+    for (i = 0; i < NUM_LINES; i++)
+    {
+        for (j = 0; j < strlen(map[i]); j++)
+        {
+            int moves = 0;
+            char **copy;
+
+            if (map[i][j] == '#' || map[i][j] == '^' || map[i][j] == '>' || map[i][j] == 'v' || map[i][j] == '<')
+            {
+                continue;
+            }
+
+            copy = copy_map(map);
+            copy[i][j] = '#';
+
+            moves = loop(copy, i, j);
+
+            free_map(copy);
+
+            if (moves == LOOP_COUNT)
+            {
+                loops++;
+            }
+        }
+    }
+
+    free_map(copy);
+    return loops;
+}
+
+char **copy_map(char **map)
+{
+    int i;
+    char **copy = malloc(sizeof(char *) * NUM_LINES);
+
+    for (i = 0; i < NUM_LINES; i++)
+    {
+        copy[i] = malloc(sizeof(char) * strlen(map[i]) + 1);
+        strcpy(copy[i], map[i]);
+    }
+
+    return copy;
 }
