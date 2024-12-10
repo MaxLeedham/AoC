@@ -8,8 +8,7 @@
 
 void read_input(FILE *fp, int **grid);
 void free_grid(int **grid);
-int find_rating(int **grid, int y, int x);
-void copy_grid(int **src, int **dest);
+int find_score(int **grid, int y, int x);
 
 int main(int argc, char **argv)
 {
@@ -29,12 +28,12 @@ int main(int argc, char **argv)
     {
         for (j = 0; j < NUM_COLUMNS; j++)
         {
-            if (grid[i][j] != 9)
+            if (grid[i][j] != 0)
             {
                 continue;
             }
 
-            sum += find_rating(grid, i, j);
+            sum += find_score(grid, i, j);
         }
     }
 
@@ -71,42 +70,41 @@ void free_grid(int **grid)
     free(grid);
 }
 
-int find_rating(int **grid, int y, int x)
+int find_score(int **grid, int y, int x)
 {
     int up = 0, right = 0, down = 0, left = 0;
     
-    if (grid[y][x] == 0)
+    if (grid[y][x] == 9)
     {
-        /* grid[y][x] = -1; */
         return 1;
     }
 
     if (y > 0)
     {
-        if (grid[y-1][x] == grid[y][x] - 1)
+        if (grid[y-1][x] == grid[y][x] + 1)
         {
-            up = find_rating(grid, y - 1, x);
+            up = find_score(grid, y - 1, x);
         }
     }
     if (x < NUM_COLUMNS - 1)
     {
-        if (grid[y][x+1] == grid[y][x] - 1)
+        if (grid[y][x+1] == grid[y][x] + 1)
         {
-            right = find_rating(grid, y, x + 1);
+            right = find_score(grid, y, x + 1);
         }
     }
     if (y < NUM_ROWS - 1)
     {
-        if (grid[y+1][x] == grid[y][x] - 1)
+        if (grid[y+1][x] == grid[y][x] + 1)
         {
-            down = find_rating(grid, y + 1, x);
+            down = find_score(grid, y + 1, x);
         }
     }
     if (x > 0)
     {
-        if (grid[y][x-1] == grid[y][x] - 1)
+        if (grid[y][x-1] == grid[y][x] + 1)
         {
-            left = find_rating(grid, y, x - 1);
+            left = find_score(grid, y, x - 1);
         }
     }
 
